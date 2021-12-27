@@ -1,0 +1,725 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Integration Mapper</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+  <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- Bootstrap core CSS -->
+  <link href="https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="https://getbootstrap.com/docs/4.1/examples/dashboard/dashboard.css" rel="stylesheet">
+  <!-- Flowchart -->
+  <link rel="stylesheet" type="text/css" href="assets/jquery.flowchart/css/stylesheet.css" media="screen">
+  <script src="assets/jquery.flowchart/js/jquery.mousewheel.min.js"></script>
+  <script src="assets/jquery.flowchart/js/jquery.flowchart.js"></script>
+  <link rel="stylesheet" href="assets/jquery.flowchart/css/jquery.flowchart.min.css">
+  <link rel="stylesheet" href="assets/jquery.flowchart/css/custom.css">
+  <!--[if lt IE 9]>
+  <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style>
+    .row {
+      margin-right: 2px;
+      margin-left: 2px;
+    }
+
+    .input-group-text {
+      padding: 0.170rem .5rem;
+      font-size: 0.9rem;
+    }
+
+    .form-control {
+      padding: 0.170rem .5rem;
+      font-size: 0.9rem;
+      height: calc(1.80rem + 2px);
+    }
+
+    .mb-3,
+    .my-3 {
+      margin-bottom: 0.5rem !important;
+    }
+
+    .input-group > .input-group-prepend {
+      flex: 0 0 30% !important;
+    }
+
+    .input-group .input-group-text {
+      width: 100%;
+    }
+
+    .form-control:focus {
+      box-shadow: 0 0 0 0.05rem rgba(0,123,255,.25);
+    }
+
+    .col-md-2 {
+      max-width: 20%;
+    }
+
+    .col-lg-10 {
+      max-width: 80%;
+    }
+
+    .pt-3, .py-3 {
+      padding-top: 0 !important;
+    }
+
+    .pb-2, .py-2 {
+      padding-bottom: 0 !important;
+    }
+    <!-- Flowchart -->
+    .flowchart-example-container {
+      height: 630px !important;
+      margin-bottom: 0px;
+    }
+  </style>
+  <style>
+    .renderOut {
+      display: block;
+      word-wrap: break-word;
+    }
+
+    ul.tree ul li:last-child:before {
+      <!-- background: #fcf8e3 !important; -->
+    }
+
+    .alert {
+      padding: 3;
+    }
+
+    .qb-btn {
+      margin-right: 5px;
+      margin-top: 1px;
+    }
+
+    .btn-group-sm > .btn, .qb-btn-sm {
+      padding: 0rem .15rem;
+    }
+
+    .dndjqb_value {
+      width: 90%;
+    }
+
+    .dndjqb_opsDropdown {
+      <!-- margin-left: 3px; -->
+    }
+
+    ul.tree ul li:last-child:before {
+      <!-- background: #fff3cd !important; -->
+    }
+  </style>
+  <link rel="stylesheet" href="assets/css/QBuilder.css" />
+  <script src="assets/js/jsTreeBuilder.js"></script>
+  <script>
+    $(function () {
+      fieldsDict = {
+        name: { type: "text" },
+        age: { type: "numeric" },
+        sex: { type: "select", values: ["male", "female"] },
+      };
+      qtb = new QueryTreeBuilder("tree", fieldsDict);
+
+      $('#getOutput').click(function () {
+        var stmt = qtb.buildIfStatement();
+        $('#queryOutput').text(JSON.stringify(qtb.queryObj));
+        $('#stmtOutput').text(stmt);
+      });
+      $('#rebuild').click(function () {
+        qtb.buildQueryTreeFromQueryObj($('#queryRebuild').val());
+        $('#queryOutput').text($('#queryRebuild').val());
+        $('#stmtOutput').text(qtb.buildIfStatement(true));
+      });
+      $('#reset').click(function () {
+        qtb.resetTree();
+      });
+    })
+  </script>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+        <div class="sidebar-sticky">
+          <h6 class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span style="margin-left: 20px;">Query Link Properties</span>
+          </h6>
+          <div class="row">
+            <div class="input-group mb-3 col-md-12">
+              <div class="input-group-prepend">
+                <span class="input-group-text">Link ID</span>
+              </div>
+              <input type="text" class="form-control" aria-label="LinkID" aria-describedby="linkid" id="sd-prop-linkid">
+            </div>
+            <div class="input-group mb-3 col-md-12">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1"><i class="fa fa-sign-out"></i>&nbsp; Out</span>
+              </div>
+              <input type="text" class="form-control" aria-label="FromOperator" aria-describedby="basic-addon1" id="sd-prop-from-op">
+            </div>
+            <div class="input-group mb-3 col-md-12">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1"><i class="fa fa-sign-in"></i>&nbsp; In</span>
+              </div>
+              <input type="text" class="form-control" aria-label="ToOperator" aria-describedby="basic-addon1" id="sd-prop-to-op">
+            </div>
+            <div class="input-group mb-3 col-md-12">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">LTPS &nbsp;<i class="fa fa-columns"></i></span>
+              </div>
+              <input type="text" class="form-control" aria-label="FromColumn" aria-describedby="basic-addon1" id="sd-prop-from-col">
+            </div>
+            <div class="input-group mb-3 col-md-12">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">IFM &nbsp;<i class="fa fa-columns"></i></span>
+              </div>
+              <input type="text" class="form-control" aria-label="ToColumn" aria-describedby="basic-addon1" id="sd-prop-to-col">
+            </div>
+            <!--
+               <div class="input-group mb-3 col-md-12">
+                  <div class="input-group-prepend">
+                     <span class="input-group-text" id="basic-addon1">Filter</span>
+                  </div>
+                  <input type="text" class="form-control" placeholder="Filter" aria-label="Filter" aria-describedby="basic-addon1">
+                  <div class="input-group-append">
+                     <span class="input-group-text"><i class="fa fa-ellipsis-h"></i></a></span>
+                  </div>
+               </div>
+               <div class="input-group mb-3 col-md-12">
+                  <div class="input-group-prepend">
+                     <span class="input-group-text" id="basic-addon1">Select list</span>
+                  </div>
+                  <select class="form-control" id="sel1">
+                     <option>1</option>
+                     <option>2</option>
+                     <option>3</option>
+                     <option>4</option>
+                  </select>
+               </div>
+               <div class="input-group mb-3 col-md-12">
+                  <div class="input-group-prepend">
+                     <span class="input-group-text" id="basic-addon1">Select Top</span>
+                  </div>
+                  <input type="number" class="form-control" placeholder="Top" aria-label="Top" aria-describedby="basic-addon1">
+               </div>
+               -->
+          </div>
+          <h6 class="sidebar-heading justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+            <span style="margin-left: 20px;">Query Creator</span>
+          </h6>
+          <ul class="nav flex-column mb-2">
+            <div class="container">
+              <div id="tree" class="alert" style="border: 1px solid grey;">
+              </div>
+              <div class="row">
+                <div class="alert alert-info" style="width: 100%;">
+                  <font style="font-size: 13px;"><b><u>Output JSON:</u></b></font><br />
+                  <span id="queryOutput" class="renderOut"></span>
+                </div>
+              </div>
+              <div class="row">
+                <div class="alert alert-info" style="width: 100%;">
+                  <font style="font-size: 13px;"><b><u>Query Output:</u></b></font><br />
+                  <span id="stmtOutput" class="renderOut"></span>
+                </div>
+              </div>
+              <textarea id="queryRebuild" rows="5" cols="27" style="width: 98%;">Enter Rebuild JSON Object</textarea>
+              &emsp;
+              <div class="row">
+                <button id="getOutput" class="btn qb-btn btn-sm qb-btn-sm col-md-6" style="padding: .375rem .75rem;max-width: 47% !important;">Get Output</button>
+                <button id="rebuild" class="btn qb-btn btn-sm qb-btn-sm col-md-6" style="padding: .375rem .75rem;max-width: 47% !important;">Rebuild Tree</button>
+              </div>
+            </div>
+          </ul>
+        </div>
+      </nav>
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+        <div class="chartjs-size-monitor" style="position: absolute; left: 0px; top: 0px; right: 0px; bottom: 0px; overflow: hidden; pointer-events: none; visibility: hidden; z-index: -1;">
+          <div class="chartjs-size-monitor-expand" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
+            <div style="position:absolute;width:1000000px;height:1000000px;left:0;top:0"></div>
+          </div>
+          <div class="chartjs-size-monitor-shrink" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1;">
+            <div style="position:absolute;width:200%;height:200%;left:0; top:0"></div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">&nbsp;</h1>
+          <div class="btn-toolbar mb-2 mb-md-0 ">
+            <div class="btn-group mr-2">
+              <button class="btn btn-sm btn-outline-secondary" type="color"><input type="color" id="link_color" /></button>
+              <button class="btn btn-sm btn-outline-secondary"><i class="fa fa-floppy-o btnIcon icic" aria-hidden="true" style=""></i> Draft</button>
+              <button class="btn btn-sm btn-outline-secondary"><i class="fa fa-paper-plane icic" aria-hidden="true" style=""></i> Publish</button>
+              <button class="btn btn-sm btn-outline-secondary" id="create_op">Create Operator</button>
+              <button class="btn btn-sm btn-outline-secondary" id="delete_selected_op">Delete Selected</button>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
+              <i class="fa fa-inbox"></i>
+              System Mapper
+            </button>
+          </div>
+        </div>
+        <!--
+           <div class="row">
+           <div class="col-md-3">
+                    <div class="table-responsive" style="border:1px solid black;" id="table1">
+                       <table class="table table-striped table-sm">
+                          <thead>
+                             <tr>
+                                <th>#</th>
+                                <th>Map</th>
+                             </tr>
+                          </thead>
+                          <tbody>
+                             <tr class="draggable_tr">
+                                <td>1,001</td>
+                                <td>Lorem</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,002</td>
+                                <td>amet</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,003</td>
+                                <td>Integer</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,003</td>
+                                <td>libero</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,004</td>
+                                <td>dapibus</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,005</td>
+                                <td>Nulla</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,006</td>
+                                <td>nibh</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,007</td>
+                                <td>sagittis</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,008</td>
+                                <td>Fusce</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,009</td>
+                                <td>augue</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,010</td>
+                                <td>massa</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,011</td>
+                                <td>eget</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,012</td>
+                                <td>taciti</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,013</td>
+                                <td>torquent</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,014</td>
+                                <td>per</td>
+                             <tr class="draggable_tr">
+                                <td>1,015</td>
+                                <td>sodales</td>
+                             </tr>
+                          </tbody>
+                       </table>
+                    </div>
+           </div>
+
+           <div class="col-md-3">
+                    <div class="table-responsive" style="border:1px solid black;" id="table2">
+                       <table class="table table-striped table-sm">
+                          <thead>
+                             <tr>
+                                <th>#</th>
+                                <th>Map</th>
+                             </tr>
+                          </thead>
+                          <tbody>
+                             <tr class="draggable_tr">
+                                <td>1,001</td>
+                                <td>Lorem</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,002</td>
+                                <td>amet</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,003</td>
+                                <td>Integer</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,003</td>
+                                <td>libero</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,004</td>
+                                <td>dapibus</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,005</td>
+                                <td>Nulla</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,006</td>
+                                <td>nibh</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,007</td>
+                                <td>sagittis</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,008</td>
+                                <td>Fusce</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,009</td>
+                                <td>augue</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,010</td>
+                                <td>massa</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,011</td>
+                                <td>eget</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,012</td>
+                                <td>taciti</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,013</td>
+                                <td>torquent</td>
+                             </tr>
+                             <tr class="draggable_tr">
+                                <td>1,014</td>
+                                <td>per</td>
+                             <tr class="draggable_tr">
+                                <td>1,015</td>
+                                <td>sodales</td>
+                             </tr>
+                          </tbody>
+                       </table>
+                    </div>
+           </div>
+           </div>
+           -->
+        <div class="row">
+          <div id="content-wrapper" style="padding-top: 0px;">
+            <div class="inner clearfix">
+              <!--<div class="flowchart-example-event" id="last_event_example_container_6">Last events:
+                 <pre id="last_event_example_6"></pre></div>-->
+              <section id="main-content" style="width: 1077px;">
+                <div class="flowchart-example" id="multiple">
+                  <div class="flowchart-example-container" id="example_multiple" style="height: 610px !important;"></div>
+                  <script type="text/javascript">
+                    $(document).ready(function () {
+                      var $linkColor = $('#link_color');
+
+                      var data = {
+                        operators: {
+                          operator1: {
+                            top: 20,
+                            left: 20,
+                            properties: {
+                              title: 'LTPS',
+                              inputs: {},
+                              /*
+                              outputs: {
+                              outs: {
+                              label: 'Output (:i)',
+                              multiple: true
+                              }
+                              }
+                              */
+                              inputs: {
+                                input_x1: { label: 'PartNo', multiple: true },
+                                input_x2: { label: 'SerialNo', multiple: true },
+                                input_x3: { label: 'FullReg', multiple: true },
+                                input_x4: { label: 'ShortReg', multiple: true },
+                                input_x5: { label: 'Fleet', multiple: true },
+                                input_x6: { label: 'Active', multiple: true },
+                                input_x7: { label: 'PlannerNo', multiple: true },
+                              },
+                              outputs: {
+                                output_x1: { label: 'PrtNo', multiple: true },
+                                output_x2: { label: 'SrlNo', multiple: true },
+                                output_x3: { label: 'Reg', multiple: true },
+                                output_x4: { label: 'ShrtReg', multiple: true },
+                                output_x7: { label: 'Fleet', multiple: true },
+                                output_x5: { label: 'A', multiple: true },
+                                output_x6: { label: 'PNo', multiple: true },
+
+                                //outs: {
+                                //  label: 'Output (:i)',
+                                //  multiple: false
+                                //}
+                              }
+                            }
+                          },
+                          operator2: {
+                            top: 20,
+                            left: 300,
+                            properties: {
+                              title: 'IFM',
+                              /*
+                              //auto generate next point on drag connection
+                              inputs: {
+                              ins: {
+                              label: 'Input (:i)',
+                              multiple: true
+                              }
+                              }
+                              */
+                              inputs: {
+                                input_y1: { label: 'PartNo', multiple: true },
+                                input_y2: { label: 'SerialNo', multiple: true },
+                                input_y3: { label: 'FullReg', multiple: true },
+                                input_y4: { label: 'ShortReg', multiple: true },
+                                input_y5: { label: 'Fleet', multiple: true },
+                                input_y6: { label: 'Active', multiple: true },
+                                input_y7: { label: 'PlannerNo', multiple: true },
+                                //ins: {
+                                //  label: 'Input (:i)',
+                                //  multiple: true
+                                //},
+                              },
+                              outputs: {
+                                output_y1: { label: 'PrtNo', multiple: true },
+                                output_y2: { label: 'SrlNo', multiple: true },
+                                output_y3: { label: 'Reg', multiple: true },
+                                output_y4: { label: 'ShrtReg', multiple: true },
+                                output_y5: { label: 'Fleet', multiple: true },
+                                output_y6: { label: 'A', multiple: true },
+                                output_y7: { label: 'PNo', multiple: true },
+                              },
+                            }
+                          },
+                        },
+                        links: {
+                          link_1: {
+                            fromOperator: 'operator1',
+                            fromConnector: 'outs',
+                            fromSubConnector: 2,
+                            toOperator: 'operator2',
+                            toConnector: 'ins',
+                            toSubConnector: 0
+                          },
+                          link_2: {
+                            fromOperator: 'operator1',
+                            fromConnector: 'outs',
+                            fromSubConnector: 1,
+                            toOperator: 'operator2',
+                            toConnector: 'ins',
+                            toSubConnector: 1
+                          },
+                          link_3: {
+                            fromOperator: 'operator1',
+                            fromConnector: 'output_x1',
+                            toOperator: 'operator2',
+                            toConnector: 'input_y2',
+                          }
+                        }
+                      };
+
+                      var $flowchart = $('#example_multiple');
+
+                      var $linkColor = $('#link_color');
+
+                      $linkColor.change(function () {
+                        var selectedLinkId = $flowchart.flowchart('getSelectedLinkId');
+                        if (selectedLinkId != null) {
+                          $flowchart.flowchart('setLinkMainColor', selectedLinkId, $linkColor.val());
+                        }
+                      });
+
+                      function showEvent(txt) {
+                        //Some Action if Required
+                        //var $lastEvent = $('#last_event_example_6');
+                        //var $lastEventContainer = $('#last_event_example_container_6');
+                        //$lastEvent.text(txt + "\n" + $lastEvent.text());
+                        //$lastEventContainer.effect( "highlight", {color: '#3366ff'}, 500);
+                        console.log(txt + "\n");
+                        console.log("highlight", { color: '#3366ff' }, 500);
+                      }
+
+                      // Apply the plugin on a standard, empty div...
+                      $flowchart.flowchart({
+                        data: data,
+                        onOperatorSelect: function (operatorId) {
+                          showEvent('Operator "' + operatorId + '" selected. Title: ' + $flowchart.flowchart('getOperatorTitle', operatorId) + '.');
+                          return true;
+                        },
+                        onOperatorUnselect: function () {
+                          showEvent('Operator unselected.');
+                          return true;
+                        },
+                        onLinkSelect: function (linkId, operatorId, operatorData) {
+                          var data = $flowchart.flowchart('getData');
+                          document.getElementById("sd-prop-linkid").value = linkId;
+                          document.getElementById("sd-prop-from-col").value = data.links[linkId].fromConnector;
+                          document.getElementById("sd-prop-to-col").value = data.links[linkId].toConnector;
+                          document.getElementById("sd-prop-to-col").value = data.links[linkId].toConnector;
+                          document.getElementById("sd-prop-from-op").value = $flowchart.flowchart('getOperatorTitle', data.links[linkId].fromOperator);
+                          document.getElementById("sd-prop-to-op").value = $flowchart.flowchart('getOperatorTitle', data.links[linkId].toOperator);
+
+                          var outputOPfieldDict = [];
+                          var outputOP = $flowchart.flowchart('getOperatorData', data.links[linkId].fromOperator)["properties"].outputs;
+
+                          for (var item in outputOP) {
+                            outputOPfieldDict.push(
+                              {
+                                [item]: "{type: 'text'}"
+                              });
+                          }
+
+                          var combinedJSON = "";
+                          for (var i = 0; i < outputOPfieldDict.length; i++) {
+                            combinedJSON = combinedJSON + JSON.stringify(outputOPfieldDict[i]) + ",";
+                          }
+
+                          combinedJSON = combinedJSON.replace(/"/g, '');
+                          combinedJSON = combinedJSON.replace(/{output_/g, 'output_');
+                          combinedJSON = combinedJSON.replace(/{outs/g, 'outs');
+                          combinedJSON = combinedJSON.replace(/}},output/g, '},output');
+                          combinedJSON = combinedJSON.replace(/}},outs/g, '},outs');
+                          combinedJSON = combinedJSON.replace(/}},/g, '}');
+                          combinedJSON = combinedJSON.replace(/'text'/g, '"text"');
+                          combinedJSON = "{" + combinedJSON + "}";
+
+                          combinedJSON = combinedJSON.replace(/output_/g, '"output_');
+                          combinedJSON = combinedJSON.replace(/outs/g, '"outs"');
+
+                          combinedJSON = combinedJSON.replace(/:{type:/g, '":{type:');
+                          combinedJSON = combinedJSON.replace(/type/g, '"type"');
+                          combinedJSON = combinedJSON.replace(/"":/g, '":');
+
+                          //Loading the fields for Query Tree
+                          var fieldsDictOBJ = JSON.parse(combinedJSON);
+
+                          fieldsDict = fieldsDictOBJ;
+
+                          qtb = new QueryTreeBuilder("tree", fieldsDict);
+                          qtb.resetTree();
+
+                          $linkColor.val($flowchart.flowchart('getLinkMainColor', linkId));
+
+                          showEvent('Link "' + linkId + '" selected. Main color: ' + $flowchart.flowchart('getLinkMainColor', linkId) + '.');
+                          return true;
+                        },
+                        onLinkUnselect: function () {
+                          showEvent('Link unselected.');
+                          return true;
+                        },
+                        onOperatorCreate: function (operatorId, operatorData, fullElement) {
+                          showEvent('New operator created. Operator ID: "' + operatorId + '", operator title: "' + operatorData.properties.title + '".');
+                          return true;
+                        },
+                        onLinkCreate: function (linkId, linkData) {
+                          showEvent('New link created. Link ID: "' + linkId + '", link color: "' + linkData.color + '".');
+                          return true;
+                        },
+                        onOperatorDelete: function (operatorId) {
+                          showEvent('Operator deleted. Operator ID: "' + operatorId + '", operator title: "' + $flowchart.flowchart('getOperatorTitle', operatorId) + '".');
+                          return true;
+                        },
+                        onLinkDelete: function (linkId, forced) {
+                          showEvent('Link deleted. Link ID: "' + linkId + '", link color: "' + $flowchart.flowchart('getLinkMainColor', linkId) + '".');
+                          return true;
+                        },
+                        onOperatorMoved: function (operatorId, position) {
+                          showEvent('Operator moved. Operator ID: "' + operatorId + ', position: ' + JSON.stringify(position) + '.');
+                        }
+                      });
+
+                      // Apply the plugin on a standard, empty div...
+                      $('#example_multiple').flowchart({
+                        data: data
+                      });
+                    });
+                  </script>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>
+    /*
+    $(document).ready(function() {
+       $("#table1 tr, #table2 tr").draggable({
+       helper: function(){
+       var selected = $('tr.selectedRow');
+       if (selected.length === 0) {
+       selected = $(this).addClass('selectedRow');
+       }
+       var container = $('<div/>').attr('id', 'draggingContainer');
+       container.append(selected.clone().removeClass("selectedRow"));
+       return container;
+       }
+       });
+
+       $("#table1, #table2").droppable({
+       drop: function (event, ui) {
+       $(this).append(ui.helper.children());
+       $('.selectedRow').remove();
+       }
+       });
+
+       $(document).on("click", "tr", function () {
+       $(this).toggleClass("selectedRow");
+       });
+    });
+    */
+    var $flowchart = $('#example_multiple');
+
+    var operatorI = 0;
+    $('#create_op').click(function () {
+      var operatorId = 'created_operator_' + operatorI;
+      var operatorData = {
+        top: 60,
+        left: 500,
+        properties: {
+          title: 'Operator ' + (operatorI + 3),
+          inputs: {
+            input_1: {
+              label: 'Input 1',
+            }
+          },
+          outputs: {
+            output_1: {
+              label: 'Output 1',
+            }
+          }
+        }
+      };
+      operatorI++;
+      $flowchart.flowchart('createOperator', operatorId, operatorData);
+    });
+
+    $('#delete_selected_op').click(function () {
+      $flowchart.flowchart('deleteSelected');
+    });
+  </script>
+</body>
+</html>
